@@ -7,10 +7,18 @@ import java.nio.file.Path;
 
 public class DataManager {
 
-    private static final String CHEMIN = "data/";
-    private static final String UTILISATEURS_CHEMIN = "data/utilisateurs/";
+    private final String CHEMIN = "data/";
+    private final String UTILISATEURS_CHEMIN = "data/utilisateurs/";
 
-    public synchronized static boolean pseudoDisponible(String pseudo) {
+    private final static DataManager instance = new DataManager();
+
+    private DataManager() {};
+
+    public static DataManager getInstance() {
+        return instance;
+    }
+
+    public synchronized boolean pseudoDisponible(String pseudo) {
         if(pseudo.matches("\\W") && pseudo.strip().length() == 0)
             //On accepte que les symboles alphanumériques et non vide.
             return false;
@@ -21,12 +29,13 @@ public class DataManager {
         return false;
     }
 
-    public synchronized static void enregistrerUtilisateur(Utilisateur utilisateur) {
+    public synchronized void enregistrerUtilisateur(Utilisateur utilisateur) {
         //TODO
     }
 
-    public synchronized static Utilisateur chargerUtilisateur(String pseudo, String password) {
+    public synchronized Utilisateur chargerUtilisateur(String pseudo, String password) {
         //TODO
+        return null;
     }
 
     //TODO

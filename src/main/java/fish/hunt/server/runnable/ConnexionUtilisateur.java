@@ -14,6 +14,7 @@ public class ConnexionUtilisateur implements Runnable{
 
     private Serveur serveur;
     private Socket socket;
+    private DataManager dataManager;
 
     private final int CONNECTE = 0;
     private final int CONNEXION_REFUSE = 1;
@@ -25,8 +26,13 @@ public class ConnexionUtilisateur implements Runnable{
     private final int PSEUDO_REFUSE = 11;
 
     public ConnexionUtilisateur(Socket socket, Serveur serveur) {
+        this(socket, serveur, DataManager.getInstance());
+    }
+
+    public ConnexionUtilisateur(Socket socket, Serveur serveur, DataManager dataManager) {
         this.socket = socket;
         this.serveur = serveur;
+        this.dataManager = dataManager;
     }
 
     @Override
@@ -55,7 +61,7 @@ public class ConnexionUtilisateur implements Runnable{
                             if (pseudo == null)
                                 return;
 
-                            if(DataManager.pseudoDisponible(pseudo)) {
+                            if(dataManager.pseudoDisponible(pseudo)) {
                                 pseudoChoisi = true;
                             }else
                                 outPut.println(PSEUDO_REFUSE);
@@ -69,7 +75,7 @@ public class ConnexionUtilisateur implements Runnable{
                             return;
 
                         utilisateur = new Utilisateur(pseudo, password);
-                        DataManager.enregistrerUtilisateur(utilisateur);
+                        dataManager.enregistrerUtilisateur(utilisateur);
 
                         connecte = true;
 
@@ -89,7 +95,7 @@ public class ConnexionUtilisateur implements Runnable{
 
                             //Si le pseudo ou le mot de passe est erroné, alors
                             //utilisateur = null.
-                            utilisateur = DataManager.chargerUtilisateur(pseudo, password);
+                            utilisateur = dataManager.chargerUtilisateur(pseudo, password);
                             if(utilisateur != null)
                                 identifie = true;
                             else
