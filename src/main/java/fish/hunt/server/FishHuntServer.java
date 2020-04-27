@@ -106,6 +106,10 @@ public class FishHuntServer {
 
                         }
 
+                        input.close();
+                        output.close();
+                        client.close();
+                        System.out.println("Connexion fermée");
                     } catch(IOException ioException) {
                         System.err.println("Erreur de connexion.");
                     }
