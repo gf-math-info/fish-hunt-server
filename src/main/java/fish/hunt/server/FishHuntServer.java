@@ -39,7 +39,7 @@ public class FishHuntServer {
             while(true) {
 
                 Socket client = serverSocket.accept();
-                System.out.println("Nouveau joueur.");
+                System.out.println("Nouveau client.");
 
                 new Thread(() -> {
 
@@ -63,6 +63,7 @@ public class FishHuntServer {
                         //utilisé, sinon on redemande.
                         boolean pseudoAccepte = false;
                         String pseudo = null;
+                        System.out.println("Attente du pseudo du client...");
                         while (!pseudoAccepte && client.isConnected()) {
 
                             pseudo = input.readLine();
@@ -71,11 +72,16 @@ public class FishHuntServer {
                                     pseudo.strip().length() != 0 &&
                                     !pseudos.containsValue(pseudo);
 
-                            if(!pseudoAccepte)
+                            if(!pseudoAccepte) {
                                 output.println(PSEUDO_REFUSE);
+                                System.out.println("Pseudo, " + pseudo +
+                                        " refusé");
+                            }
                         }
                         //En sortant de la boucle, le pseudo est valide.
-                        output.println(PSEUDO_ACCEPTE);
+                        System.out.println("Pseudo, " + pseudo + " accepté.");
+                        output.write(PSEUDO_ACCEPTE);
+                        output.flush();
                         synchronized (cadenas) {
                             utilisateurs.add(output);
                             pseudos.put(output, pseudo);
@@ -105,6 +111,9 @@ public class FishHuntServer {
                             }
 
                         }
+
+                        System.out.println("Déconnexion de " + pseudo + "...");
+                        pseudos.remove(output);
 
                         input.close();
                         output.close();
