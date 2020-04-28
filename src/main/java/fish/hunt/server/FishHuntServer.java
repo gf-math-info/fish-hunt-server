@@ -16,9 +16,13 @@ public class FishHuntServer {
 
     private static final int MAX_RECORD = 3;
 
-    private static final int ATTAQUE_POISSON = 150;
-    private static final int MISE_A_JOUR_SCORE = 160;
-    private static final int MISE_A_JOUR_RECORD = 161;
+    private static final int ATTAQUE_POISSON_ENVOIE = 150;
+    private static final int MISE_A_JOUR_SCORE_ENVOIE = 160;
+    private static final int MISE_A_JOUR_RECORD_ENVOIE = 161;
+    private static final int AJOUT_POISSON_RECU = 50;
+    private static final int SCORE_A_JOUR_RECU = 60;
+    private static final int PSEUDO_ACCEPTE = 10;
+    private static final int PSEUDO_REFUSE = 11;
 
     private static final Object cadenas = new Object();
     private static ServerSocket serverSocket;
@@ -42,12 +46,6 @@ public class FishHuntServer {
                 System.out.println("Nouveau client.");
 
                 new Thread(() -> {
-
-                    final int PSEUDO_ACCEPTE = 10;
-                    final int PSEUDO_REFUSE = 11;
-
-                    final int AJOUT_POISSON = 50;
-                    final int SCORE_A_JOUR = 60;
 
                     BufferedReader input;
                     PrintWriter output;
@@ -93,14 +91,67 @@ public class FishHuntServer {
 
                             switch (requete) {
 
-                                case AJOUT_POISSON:
-                                    ajouterPoisson(output);
+                                case AJOUT_POISSON_RECU://Signal reçu.
+
+                                    synchronized (cadenas) {
+
+                                        System.out.println("Ajout de poisson par " +
+                                                pseudos.get(output));
+
+                                        for(PrintWriter out : utilisateurs) {
+                                            if(!out.equals(output)) {
+                                                /*Pour tous les autres joueurs,
+                                                on leur envoie un signal*/
+                                                out.println(ATTAQUE_POISSON_ENVOIE);
+                                                out.println(pseudos.get(output));
+                                            }
+                                        }
+
+                                    }
+
                                     break;
 
-                                case SCORE_A_JOUR:
+                                case SCORE_A_JOUR_RECU:
                                     int score = input.read();
-                                    if(score != -1)
-                                        miseAJourScore(output, score);
+
+                                    if(score != -1) {
+                                        /*Si la communication continue...*/
+                                        synchronized (cadenas) {
+
+                                            System.out.println(
+                                                    "Mise à jour du score de " +
+                                                    pseudos.get(output) +
+                                                            " avec " + score);
+
+                                            boolean nouveauRecord = records.size() != MAX_RECORD ||
+                                                    score > records.get(MAX_RECORD - 1).getScore();
+
+                                            if(nouveauRecord) {
+                                                if(records.size() == MAX_RECORD)
+                                                    records.remove(MAX_RECORD - 1);
+                                                records.add(new Record(pseudos.get(output), score));
+                                            }
+
+                                            utilisateurs
+                                                    .forEach(out -> {
+
+                                                        out.println(MISE_A_JOUR_SCORE_ENVOIE);
+                                                        out.println(pseudos.get(output));
+                                                        out.println(score);
+
+                                                        if(nouveauRecord) {
+                                                            output.println(MISE_A_JOUR_RECORD_ENVOIE);
+                                                            output.println(records.size());
+                                                            records.forEach(record -> {
+                                                                output.println(record.getPseudo());
+                                                                output.println(record.getScore());
+                                                            });
+                                                        }
+
+                                                    });
+                                        }
+
+                                    }
                                     break;
 
                                 default:
@@ -132,51 +183,9 @@ public class FishHuntServer {
         }
     }
 
-    private synchronized static void ajouterPoisson(PrintWriter attaquant) {
-        synchronized (cadenas) {
-            System.out.println("Ajout de poisson par " +
-                    pseudos.get(attaquant));
-            utilisateurs.stream()
-                    .filter(output -> !output.equals(attaquant))
-                    .forEach(output -> {
-                        output.println(ATTAQUE_POISSON);
-                        output.println(pseudos.get(attaquant));
-                    });
-        }
-    }
-
     private synchronized static void miseAJourScore(PrintWriter printWriter,
                                                     int score) {
-        synchronized (cadenas) {
-            System.out.println("Mise à jour du score de " +
-                    pseudos.get(printWriter) + " avec " + score);
 
-            boolean nouveauRecord = records.size() != MAX_RECORD &&
-                    score > records.get(MAX_JOUEURS_ATTENTES - 1).getScore();
-            if(nouveauRecord) {
-                if(records.size() == MAX_RECORD)
-                    records.remove(MAX_JOUEURS_ATTENTES - 1);
-                records.add(new Record(pseudos.get(printWriter), score));
-            }
-
-            utilisateurs
-                    .forEach(output -> {
-
-                        output.println(MISE_A_JOUR_SCORE);
-                        output.println(pseudos.get(printWriter));
-                        output.println(score);
-
-                        if(nouveauRecord) {
-                            output.println(MISE_A_JOUR_RECORD);
-                            output.println(records.size());
-                            records.stream().forEach(record -> {
-                                output.println(record.getPseudo());
-                                output.println(record.getScore());
-                            });
-                        }
-
-                    });
-        }
     }
 
     private static class Record implements Comparable<Record>{

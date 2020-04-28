@@ -1,0 +1,95 @@
+De manière général, le serveur est programmé tel que vu en cours. Il fonctionne
+comme si une éternelle partie se joue. Le serveur affiche les scores de tous les
+joueurs en ligne à tous les joueurs. Lorsqu'un joueur commet deux tirs parfaits
+de suite, il envoie un poisson à tous les autres joueurs. S'il fait quatres tirs
+parfaits de suite, il envoie un poisson spécial à tous les autres joueurs.
+
+Les échanges se font commen suit :
+
+	Si un joueur souhaite se joindre à la partie, alors...
+
+		1. il se connecte au serveur.
+
+			2. le serveur attend un pseudo.
+
+		3. le client envoie son pseudo.
+
+			4. le serveur lui envoie un code lui signifiant si le
+			pseudo est accepté ou refusé. Si le pseudo ne répond
+			pas à certains critères ou s'il est déjà pris, il est
+			refusé. Si le pseudo est refusé, alors on retourne à
+			(1). Si le pseudo est accepté, alors il enregistre
+			le pseudo et le socket du joueur.
+
+			5. le serveur lui envoie le nombre de joueurs présents
+			dans la partie.
+
+			6. le serveur lui envoie le pseudo et ensuite le score
+			de tous les joueurs présents dans la partie.
+
+	La partie commence maintenant.
+
+	Si un joueur commet 2 tirs parfaits de suite, alors...
+
+		1. le joueur envoie un code au serveur.
+
+			2. le serveur reçoit le code et envoie à tous les
+			autres joueurs le code signifiant qu'ils sont attaqués.
+
+			3. le serveur envoie le pseudo de l'attaquant à tous
+			les joueurs attaqués.
+
+				4. les joueurs reçoivent le code d'attaque.
+
+	Si un joueur commet 4 tirs parfaits de suite, alors le principe de
+	communication est le même que lorsque 2 tirs parfaits se produit.
+
+	Si un joueur change de score, alors...
+
+		1. le joueur envoie un code au serveur signifiant que son
+		score a changé.
+
+		2. le joueur envoie sont nouveau score au serveur.
+
+			3. le serveur envoie un code à tous les joueurs
+			de la partie pour signifier qu'il faut mettre à jour
+			le score d'un joueur.
+
+			4. le serveur envoie aux joueurs le pseudo du joueur
+			que le score a changé.
+
+			5. le serveur envoie aux joueurs le score du joueur.
+
+				6. les joueurs reçoivent le code et mettre à
+				jour leur liste.
+
+	Si un joueur quitte la partie ou perd la partie, alors...
+
+			1. le serveur remarque que la connexion est rompu. Il
+			envoie aux joueurs encore dans la partie un code
+			qui signifie qu'un joueur s'est déconnecté.
+
+			2. le serveur envoie aux joueurs le pseudo du joueur
+			déconnecté.
+
+Les codes d'envoie pour les clients sont :
+
+	50. pour une attaque d'un poisson normal.
+
+	51. pour une attaque d'un poisson spécial.
+
+	60. pour une mise à jour du score.
+
+Les codes d'envoie pour le serveur sont :
+
+	10. pour un pseudo accepté.
+
+	11. pour un pseudo refusé.
+
+	150. pour une attaque d'un poisson normal.
+
+	151. pour une attaque d'un poisson spécial.
+
+	160. pour une mise à jour du score d'un joueur.
+
+	190. pour une déconnexion d'un joueur.
