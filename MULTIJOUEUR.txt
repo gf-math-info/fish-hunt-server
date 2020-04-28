@@ -82,9 +82,9 @@ Les codes d'envoie pour les clients sont :
 
 Les codes d'envoie pour le serveur sont :
 
-	10. pour un pseudo accepté.
+	110. pour un pseudo accepté.
 
-	11. pour un pseudo refusé.
+	111. pour un pseudo refusé.
 
 	150. pour une attaque d'un poisson normal.
 

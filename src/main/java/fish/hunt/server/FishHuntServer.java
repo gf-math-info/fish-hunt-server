@@ -14,30 +14,27 @@ public class FishHuntServer {
     private static final int PORT = 1337;
     private static final int MAX_JOUEURS_ATTENTES = 25;
 
-    private static final int MAX_RECORD = 3;
-
-    private static final int ATTAQUE_POISSON_ENVOIE = 150;
+    private static final int PSEUDO_ACCEPTE = 110;
+    private static final int PSEUDO_REFUSE = 111;
+    private static final int ATTAQUE_POISSON_NORMAL_ENVOIE = 150;
+    private static final int ATTAQUE_POISSON_SPECIAL_ENVOIE = 151;
     private static final int MISE_A_JOUR_SCORE_ENVOIE = 160;
-    private static final int MISE_A_JOUR_RECORD_ENVOIE = 161;
-    private static final int AJOUT_POISSON_RECU = 50;
-    private static final int SCORE_A_JOUR_RECU = 60;
-    private static final int PSEUDO_ACCEPTE = 10;
-    private static final int PSEUDO_REFUSE = 11;
+    private static final int DECONNEXION_JOUEUR_ENVOIE = 190;
+
+    private static final int ATTAQUE_POISSON_NORMAL_RECU = 50;
+    private static final int ATTAQUE_POISSON_SPECIAL_RECU = 51;
+    private static final int MISE_A_JOUR_SCORE_RECU = 60;
 
     private static final Object cadenas = new Object();
-    private static ServerSocket serverSocket;
 
-    private static final ArrayList<PrintWriter> utilisateurs =
-            new ArrayList<>();
-    private static final WeakHashMap<PrintWriter, String> pseudos =
-            new WeakHashMap<>();
-    private static final ArrayList<Record> records =
-            new ArrayList<>(MAX_RECORD);
+    private static final ArrayList<PrintWriter> utilisateurs = new ArrayList<>();
+    private static final WeakHashMap<PrintWriter, String> pseudos = new WeakHashMap<>();
+    private static final WeakHashMap<PrintWriter, Integer> scores = new WeakHashMap<>();
 
     public static void main(String[] args) {
         try {
 
-            serverSocket = new ServerSocket(PORT, MAX_JOUEURS_ATTENTES);
+            ServerSocket serverSocket = new ServerSocket(PORT, MAX_JOUEURS_ATTENTES);
             System.out.println("Serveur fonctionnel sur le port " + PORT);
 
             while(true) {
@@ -52,10 +49,8 @@ public class FishHuntServer {
 
                     try {
 
-                        input = new BufferedReader(
-                                new InputStreamReader(client.getInputStream()));
-                        output = new PrintWriter(client.getOutputStream(),
-                                true);
+                        input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        output = new PrintWriter(client.getOutputStream(), true);
 
                         //On attends un pseudo non vide et qui n'est pas
                         //utilisé, sinon on redemande.
@@ -65,24 +60,36 @@ public class FishHuntServer {
                         while (!pseudoAccepte && client.isConnected()) {
 
                             pseudo = input.readLine();
+                            if(pseudo == null)
+                                return;
 
-                            pseudoAccepte = pseudo != null &&
-                                    pseudo.strip().length() != 0 &&
+                            pseudoAccepte = pseudo.strip().length() != 0 && pseudo.length() < 11 &&
                                     !pseudos.containsValue(pseudo);
 
                             if(!pseudoAccepte) {
+                                System.out.println("Pseudo, " + pseudo + " refusé");
                                 output.println(PSEUDO_REFUSE);
-                                System.out.println("Pseudo, " + pseudo +
-                                        " refusé");
+                                output.flush();
                             }
                         }
                         //En sortant de la boucle, le pseudo est valide.
                         System.out.println("Pseudo, " + pseudo + " accepté.");
-                        output.write(PSEUDO_ACCEPTE);
+                        output.println(PSEUDO_ACCEPTE);
                         output.flush();
+
                         synchronized (cadenas) {
+                            //On garde le pseudo en mémoire.
                             utilisateurs.add(output);
                             pseudos.put(output, pseudo);
+                            scores.put(output, 0);
+
+                            //On envoie le score de tous les joueurs dans la partie.
+                            output.println(utilisateurs.size());
+                            for(PrintWriter utilisateur : utilisateurs) {
+                                output.println(pseudos.get(utilisateur));
+                                output.println(scores.get(output));
+                            }
+                            output.flush();
                         }
 
                         //Entre dans la partie.
@@ -91,19 +98,19 @@ public class FishHuntServer {
 
                             switch (requete) {
 
-                                case AJOUT_POISSON_RECU://Signal reçu.
+                                case ATTAQUE_POISSON_NORMAL_RECU://Signal reçu.
 
                                     synchronized (cadenas) {
 
-                                        System.out.println("Ajout de poisson par " +
-                                                pseudos.get(output));
+                                        System.out.println("Attaque de poisson normal par " + pseudos.get(output));
 
-                                        for(PrintWriter out : utilisateurs) {
-                                            if(!out.equals(output)) {
+                                        for(PrintWriter utilisateur : utilisateurs) {
+                                            if(!utilisateur.equals(output)) {
                                                 /*Pour tous les autres joueurs,
                                                 on leur envoie un signal*/
-                                                out.println(ATTAQUE_POISSON_ENVOIE);
-                                                out.println(pseudos.get(output));
+                                                utilisateur.println(ATTAQUE_POISSON_NORMAL_ENVOIE);
+                                                utilisateur.println(pseudos.get(output));
+                                                utilisateur.flush();
                                             }
                                         }
 
@@ -111,65 +118,81 @@ public class FishHuntServer {
 
                                     break;
 
-                                case SCORE_A_JOUR_RECU:
-                                    int score = input.read();
+                                case ATTAQUE_POISSON_SPECIAL_RECU:
 
-                                    if(score != -1) {
-                                        /*Si la communication continue...*/
-                                        synchronized (cadenas) {
+                                    synchronized (cadenas) {
 
-                                            System.out.println(
-                                                    "Mise à jour du score de " +
-                                                    pseudos.get(output) +
-                                                            " avec " + score);
+                                        System.out.println("Attaque de poisson spécial par " + pseudos.get(output));
 
-                                            boolean nouveauRecord = records.size() != MAX_RECORD ||
-                                                    score > records.get(MAX_RECORD - 1).getScore();
-
-                                            if(nouveauRecord) {
-                                                if(records.size() == MAX_RECORD)
-                                                    records.remove(MAX_RECORD - 1);
-                                                records.add(new Record(pseudos.get(output), score));
+                                        for(PrintWriter utilisateur : utilisateurs) {
+                                            if(!utilisateur.equals(output)) {
+                                                utilisateur.println(ATTAQUE_POISSON_SPECIAL_ENVOIE);
+                                                utilisateur.println(pseudos.get(output));
+                                                utilisateur.flush();
                                             }
-
-                                            utilisateurs
-                                                    .forEach(out -> {
-
-                                                        out.println(MISE_A_JOUR_SCORE_ENVOIE);
-                                                        out.println(pseudos.get(output));
-                                                        out.println(score);
-
-                                                        if(nouveauRecord) {
-                                                            output.println(MISE_A_JOUR_RECORD_ENVOIE);
-                                                            output.println(records.size());
-                                                            records.forEach(record -> {
-                                                                output.println(record.getPseudo());
-                                                                output.println(record.getScore());
-                                                            });
-                                                        }
-
-                                                    });
                                         }
 
                                     }
+
+                                    break;
+
+                                case MISE_A_JOUR_SCORE_RECU:
+                                    int score = input.read();
+                                    if(score == -1) {//Le joueur est déconnecté.
+
+                                        synchronized (cadenas) {
+
+                                            System.out.println("Déconnexion de" + pseudos.get(output) + "...");
+                                            utilisateurs.remove(output);
+                                            for(PrintWriter utilisateur : utilisateurs) {
+                                                utilisateur.println(DECONNEXION_JOUEUR_ENVOIE);
+                                                utilisateur.println(pseudos.get(output));
+                                                utilisateur.flush();
+                                            }
+
+                                        }
+
+                                    } else {
+
+                                        synchronized (cadenas) {
+
+                                            System.out.println("Mise à jour du score de " + pseudos.get(output) +
+                                                    " avec " + score + "points.");
+                                            for(PrintWriter utilisateur : utilisateurs) {
+                                                utilisateur.println(MISE_A_JOUR_SCORE_ENVOIE);
+                                                utilisateur.println(pseudos.get(output));
+                                                utilisateur.println(score);
+                                                utilisateur.flush();
+                                            }
+
+                                            //On met à jour le score à l'interne.
+                                            scores.replace(output, score);
+
+                                        }
+
+                                    }
+
                                     break;
 
                                 default:
-                                    System.err.println("Mauvaise requête : " +
-                                            requete);
-                                    break;
+                                    System.err.println("Mauvaise requête : " + requete);
 
                             }
 
                         }
 
                         System.out.println("Déconnexion de " + pseudo + "...");
-                        pseudos.remove(output);
+                        utilisateurs.remove(output);
+                        for(PrintWriter utilisateur : utilisateurs) {
+                            utilisateur.println(DECONNEXION_JOUEUR_ENVOIE);
+                            utilisateur.println(pseudos.get(output));
+                            utilisateur.flush();
+                        }
 
                         input.close();
                         output.close();
                         client.close();
-                        System.out.println("Connexion fermée");
+                        System.out.println("Connexion avec " + pseudos.get(output) + " terminée.");
                     } catch(IOException ioException) {
                         System.err.println("Erreur de connexion.");
                     }
@@ -180,35 +203,6 @@ public class FishHuntServer {
 
         } catch (IOException ioException) {
             ioException.printStackTrace();
-        }
-    }
-
-    private synchronized static void miseAJourScore(PrintWriter printWriter,
-                                                    int score) {
-
-    }
-
-    private static class Record implements Comparable<Record>{
-
-        private String pseudo;
-        private int score;
-
-        public Record(String pseudo, int score) {
-            this.pseudo = pseudo;
-            this.score = score;
-        }
-
-        public String getPseudo() {
-            return pseudo;
-        }
-
-        public int getScore() {
-            return score;
-        }
-
-        @Override
-        public int compareTo(Record record) {
-            return record.score - score;
         }
     }
 }
