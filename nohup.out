@@ -1,0 +1,29 @@
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.intellij.util.ReflectionUtil to field sun.awt.X11.XToolkit.awtAppClassName
+WARNING: Please consider reporting this to the maintainers of com.intellij.util.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+2020-04-26 11:36:53,354 [   6425]   WARN - Container.ComponentManagerImpl - Do not use constructor injection (requestorClass=com.android.tools.idea.sdk.AndroidSdks) 
+2020-04-26 11:36:57,556 [  10627]   WARN - openapi.wm.impl.ToolWindowImpl - ToolWindow icons should be 13x13. Please fix ToolWindow (ID:  Problems View) or icon jar:file:/usr/share/idea/lib/icons.jar!/general/warning.svg 
+2020-04-26 11:37:16,788 [  29859]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project fish-hunt-server 
+2020-04-26 11:37:20,024 [  33095]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project fish-hunt-server 
+2020-04-26 11:40:56,724 [ 249795]   WARN - ernallyAddedFilesProcessorImpl - Cannot find project config directory for non-default and non-directory based project fish-hunt-server 
+2020-04-26 11:41:13,528 [ 266599]   WARN - com.intellij.util.xmlb.Binding - no accessors for class org.jetbrains.kotlin.idea.scripting.gradle.GradleScriptInputsWatcher$Storage 
+2020-04-26 11:41:13,550 [ 266621]   WARN - com.intellij.util.xmlb.Binding - no accessors for class org.jetbrains.kotlin.idea.core.script.configuration.utils.ScriptClassRootsStorage 
+2020-04-26 11:41:14,709 [ 267780]   WARN - al.daemon.GradleDaemonServices - Unable to send daemon message for Gradle 6.3 
+2020-04-26 11:41:14,718 [ 267789]   WARN - al.daemon.GradleDaemonServices - 'void org.gradle.api.internal.file.DefaultFileCollectionFactory.<init>(org.gradle.internal.file.PathToFileResolver, org.gradle.api.internal.tasks.TaskDependencyFactory, org.gradle.api.internal.file.collections.DirectoryFileTreeFactory, org.gradle.internal.Factory)' 
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.intellij.util.ReflectionUtil to field sun.awt.X11.XToolkit.awtAppClassName
+WARNING: Please consider reporting this to the maintainers of com.intellij.util.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+Already running
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.intellij.util.ReflectionUtil to field sun.awt.X11.XToolkit.awtAppClassName
+WARNING: Please consider reporting this to the maintainers of com.intellij.util.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+Already running
