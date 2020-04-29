@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.WeakHashMap;
+import java.util.HashMap;
 
 public class FishHuntServer {
 
@@ -28,8 +28,8 @@ public class FishHuntServer {
     private static final Object cadenas = new Object();
 
     private static final ArrayList<PrintWriter> utilisateurs = new ArrayList<>();
-    private static final WeakHashMap<PrintWriter, String> pseudos = new WeakHashMap<>();
-    private static final WeakHashMap<PrintWriter, Integer> scores = new WeakHashMap<>();
+    private static final HashMap<PrintWriter, String> pseudos = new HashMap<>();
+    private static final HashMap<PrintWriter, Integer> scores = new HashMap<>();
 
     public static void main(String[] args) {
         try {
@@ -45,7 +45,7 @@ public class FishHuntServer {
                 new Thread(() -> {
 
                     BufferedReader input;
-                    PrintWriter output;
+                    PrintWriter output = null;
 
                     try {
 
@@ -68,13 +68,13 @@ public class FishHuntServer {
 
                             if(!pseudoAccepte) {
                                 System.out.println("Pseudo, " + pseudo + " refusé");
-                                output.println(PSEUDO_REFUSE);
+                                output.write(PSEUDO_REFUSE);
                                 output.flush();
                             }
                         }
                         //En sortant de la boucle, le pseudo est valide.
                         System.out.println("Pseudo, " + pseudo + " accepté.");
-                        output.println(PSEUDO_ACCEPTE);
+                        output.write(PSEUDO_ACCEPTE);
                         output.flush();
 
                         synchronized (cadenas) {
@@ -84,10 +84,10 @@ public class FishHuntServer {
                             scores.put(output, 0);
 
                             //On envoie le score de tous les joueurs dans la partie.
-                            output.println(utilisateurs.size());
+                            output.write(utilisateurs.size());
                             for(PrintWriter utilisateur : utilisateurs) {
                                 output.println(pseudos.get(utilisateur));
-                                output.println(scores.get(output));
+                                output.write(scores.get(output));
                             }
                             output.flush();
                         }
@@ -108,7 +108,7 @@ public class FishHuntServer {
                                             if(!utilisateur.equals(output)) {
                                                 /*Pour tous les autres joueurs,
                                                 on leur envoie un signal*/
-                                                utilisateur.println(ATTAQUE_POISSON_NORMAL_ENVOIE);
+                                                utilisateur.write(ATTAQUE_POISSON_NORMAL_ENVOIE);
                                                 utilisateur.println(pseudos.get(output));
                                                 utilisateur.flush();
                                             }
@@ -126,7 +126,7 @@ public class FishHuntServer {
 
                                         for(PrintWriter utilisateur : utilisateurs) {
                                             if(!utilisateur.equals(output)) {
-                                                utilisateur.println(ATTAQUE_POISSON_SPECIAL_ENVOIE);
+                                                utilisateur.write(ATTAQUE_POISSON_SPECIAL_ENVOIE);
                                                 utilisateur.println(pseudos.get(output));
                                                 utilisateur.flush();
                                             }
@@ -140,17 +140,7 @@ public class FishHuntServer {
                                     int score = input.read();
                                     if(score == -1) {//Le joueur est déconnecté.
 
-                                        synchronized (cadenas) {
-
-                                            System.out.println("Déconnexion de" + pseudos.get(output) + "...");
-                                            utilisateurs.remove(output);
-                                            for(PrintWriter utilisateur : utilisateurs) {
-                                                utilisateur.println(DECONNEXION_JOUEUR_ENVOIE);
-                                                utilisateur.println(pseudos.get(output));
-                                                utilisateur.flush();
-                                            }
-
-                                        }
+                                        break;
 
                                     } else {
 
@@ -159,9 +149,9 @@ public class FishHuntServer {
                                             System.out.println("Mise à jour du score de " + pseudos.get(output) +
                                                     " avec " + score + "points.");
                                             for(PrintWriter utilisateur : utilisateurs) {
-                                                utilisateur.println(MISE_A_JOUR_SCORE_ENVOIE);
+                                                utilisateur.write(MISE_A_JOUR_SCORE_ENVOIE);
                                                 utilisateur.println(pseudos.get(output));
-                                                utilisateur.println(score);
+                                                utilisateur.write(score);
                                                 utilisateur.flush();
                                             }
 
@@ -184,17 +174,26 @@ public class FishHuntServer {
                         System.out.println("Déconnexion de " + pseudo + "...");
                         utilisateurs.remove(output);
                         for(PrintWriter utilisateur : utilisateurs) {
-                            utilisateur.println(DECONNEXION_JOUEUR_ENVOIE);
+                            utilisateur.write(DECONNEXION_JOUEUR_ENVOIE);
                             utilisateur.println(pseudos.get(output));
                             utilisateur.flush();
                         }
+                        pseudos.remove(output);
+                        scores.remove(output);
 
                         input.close();
                         output.close();
                         client.close();
                         System.out.println("Connexion avec " + pseudos.get(output) + " terminée.");
                     } catch(IOException ioException) {
+
                         System.err.println("Erreur de connexion.");
+
+                        utilisateurs.remove(output);
+                        pseudos.remove(output);
+                        scores.remove(output);
+
+                        ioException.printStackTrace();
                     }
 
                 }).start();
