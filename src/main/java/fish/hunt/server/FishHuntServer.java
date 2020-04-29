@@ -52,18 +52,24 @@ public class FishHuntServer {
                         input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         output = new PrintWriter(client.getOutputStream(), true);
 
-                        //On attends un pseudo non vide et qui n'est pas
+                        //On attend un pseudo non vide et qui n'est pas
                         //utilisé, sinon on redemande.
                         boolean pseudoAccepte = false;
                         String pseudo = null;
                         System.out.println("Attente du pseudo du client...");
+
+                        // commentaire Antoine:
+                        // on verra si on préfère mettre une boucle do... while
+                        // ici, ça pourrait être plus approprié que le while
                         while (!pseudoAccepte && client.isConnected()) {
 
                             pseudo = input.readLine();
                             if(pseudo == null)
                                 return;
 
-                            pseudoAccepte = pseudo.strip().length() != 0 && pseudo.length() < 11 &&
+                            pseudoAccepte =
+                                    pseudo.strip().length() != 0 &&
+                                    pseudo.length() < 11 &&
                                     !pseudos.containsValue(pseudo);
 
                             if(!pseudoAccepte) {
@@ -98,7 +104,7 @@ public class FishHuntServer {
 
                             switch (requete) {
 
-                                case ATTAQUE_POISSON_NORMAL_RECU://Signal reçu.
+                                case ATTAQUE_POISSON_NORMAL_RECU: //Signal reçu.
 
                                     synchronized (cadenas) {
 
