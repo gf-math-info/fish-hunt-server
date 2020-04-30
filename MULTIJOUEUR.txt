@@ -41,7 +41,7 @@ Les échanges se font comme suit :
 
 				4. les joueurs reçoivent le code d'attaque.
 
-	Si un joueur commet 4 tirs parfaits de suite, alors le principe de
+	Si un joueur réussit 4 tirs parfaits de suite, alors le principe de
 	communication est le même que lorsque 2 tirs parfaits se produisent.
 
 	Si un joueur change de score, alors...
@@ -49,11 +49,11 @@ Les échanges se font comme suit :
 		1. le joueur envoie un code au serveur signifiant que son
 		score a changé.
 
-		2. le joueur envoie sont nouveau score au serveur.
+		2. le joueur envoie son nouveau score au serveur.
 
 			3. le serveur envoie un code à tous les joueurs
 			de la partie pour signifier qu'il faut mettre à jour
-			le score d'un joueur.
+			le score du joueur dont le score a changé.
 
 			4. le serveur envoie aux joueurs le pseudo du joueur
 			dont le score a changé.
