@@ -21,10 +21,16 @@ Les échanges se font comme suit :
 			(1). Si le pseudo est accepté, alors il enregistre
 			le pseudo et le socket du joueur.
 
-			5. le serveur lui envoie le nombre de joueurs présents
+			5. le serveur envoie un code à tous les autres joueurs
+			qui signale une nouvelle connexion.
+
+			6. le serveur envoie à tous les autres joueurs le pseudo
+			du nouveau joueur.
+
+			7. le serveur lui envoie le nombre de joueurs présents
 			dans la partie.
 
-			6. le serveur lui envoie le pseudo et ensuite le score
+			8. le serveur lui envoie le pseudo et ensuite le score
 			de tous les joueurs présents dans la partie.
 
 	La partie commence maintenant.
@@ -93,3 +99,5 @@ Les codes d'envoi pour le serveur sont :
 	160. pour une mise à jour du score d'un joueur.
 
 	190. pour une déconnexion d'un joueur.
+
+	191. pour une connexion d'un joueur.

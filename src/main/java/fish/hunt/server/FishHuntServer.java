@@ -20,6 +20,7 @@ public class FishHuntServer {
     private static final int ATTAQUE_POISSON_SPECIAL_ENVOIE = 151;
     private static final int MISE_A_JOUR_SCORE_ENVOIE = 160;
     private static final int DECONNEXION_JOUEUR_ENVOIE = 190;
+    private static final int CONNEXION_JOUEUR_ENVOIE = 191;
 
     private static final int ATTAQUE_POISSON_NORMAL_RECU = 50;
     private static final int ATTAQUE_POISSON_SPECIAL_RECU = 51;
@@ -57,10 +58,6 @@ public class FishHuntServer {
                         //utilisé, sinon on redemande.
                         boolean pseudoAccepte = false;
                         System.out.println("Attente du pseudo du client...");
-
-                        // commentaire Antoine:
-                        // on verra si on préfère mettre une boucle do... while
-                        // ici, ça pourrait être plus approprié que le while
                         while (!pseudoAccepte && client.isConnected()) {
 
                             pseudo = input.readLine();
@@ -84,6 +81,12 @@ public class FishHuntServer {
                         output.flush();
 
                         synchronized (cadenas) {
+                            for(PrintWriter utilisateur : utilisateurs) {
+                                output.write(CONNEXION_JOUEUR_ENVOIE);
+                                output.println(pseudo);
+                                output.flush();
+                            }
+
                             //On garde le pseudo en mémoire.
                             utilisateurs.add(output);
                             pseudos.put(output, pseudo);
@@ -105,7 +108,7 @@ public class FishHuntServer {
 
                             switch (requete) {
 
-                                case ATTAQUE_POISSON_NORMAL_RECU: //Signal reçu.
+                                case ATTAQUE_POISSON_NORMAL_RECU:
 
                                     synchronized (cadenas) {
 
@@ -145,11 +148,10 @@ public class FishHuntServer {
 
                                 case MISE_A_JOUR_SCORE_RECU:
                                     int score = input.read();
-                                    if(score == -1) {//Le joueur est déconnecté.
+                                    if(score == -1)//Le joueur est déconnecté.
+                                        throw new IOException();
 
-                                        break;
-
-                                    } else {
+                                    else {
 
                                         synchronized (cadenas) {
 
@@ -191,7 +193,7 @@ public class FishHuntServer {
                         input.close();
                         output.close();
                         client.close();
-                        System.out.println("Connexion avec " + pseudos.get(output) + " terminée.");
+                        System.out.println("Connexion avec " + pseudo + " terminée.");
                     } catch(IOException ioException) {
 
                         System.err.println("Erreur de connexion ou déconnexion anticipée de " + pseudo + ".");
