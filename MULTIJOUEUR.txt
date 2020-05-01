@@ -1,10 +1,10 @@
-De manière général, le serveur est programmé tel que vu en cours. Il fonctionne
+De manière générale, le serveur est programmé tel que vu en cours. Il fonctionne
 comme si une éternelle partie se joue. Le serveur affiche les scores de tous les
-joueurs en ligne à tous les joueurs. Lorsqu'un joueur commet deux tirs parfaits
+joueurs en ligne à tous les joueurs. Lorsqu'un joueur réussit deux tirs parfaits
 de suite, il envoie un poisson à tous les autres joueurs. S'il fait quatres tirs
 parfaits de suite, il envoie un poisson spécial à tous les autres joueurs.
 
-Les échanges se font commen suit :
+Les échanges se font comme suit :
 
 	Si un joueur souhaite se joindre à la partie, alors...
 
@@ -41,38 +41,38 @@ Les échanges se font commen suit :
 
 				4. les joueurs reçoivent le code d'attaque.
 
-	Si un joueur commet 4 tirs parfaits de suite, alors le principe de
-	communication est le même que lorsque 2 tirs parfaits se produit.
+	Si un joueur réussit 4 tirs parfaits de suite, alors le principe de
+	communication est le même que lorsque 2 tirs parfaits se produisent.
 
 	Si un joueur change de score, alors...
 
 		1. le joueur envoie un code au serveur signifiant que son
 		score a changé.
 
-		2. le joueur envoie sont nouveau score au serveur.
+		2. le joueur envoie son nouveau score au serveur.
 
 			3. le serveur envoie un code à tous les joueurs
 			de la partie pour signifier qu'il faut mettre à jour
-			le score d'un joueur.
+			le score du joueur dont le score a changé.
 
 			4. le serveur envoie aux joueurs le pseudo du joueur
-			que le score a changé.
+			dont le score a changé.
 
 			5. le serveur envoie aux joueurs le score du joueur.
 
-				6. les joueurs reçoivent le code et mettre à
+				6. les joueurs reçoivent le code et mettent à
 				jour leur liste.
 
 	Si un joueur quitte la partie ou perd la partie, alors...
 
-			1. le serveur remarque que la connexion est rompu. Il
+			1. le serveur remarque que la connexion est rompue. Il
 			envoie aux joueurs encore dans la partie un code
 			qui signifie qu'un joueur s'est déconnecté.
 
 			2. le serveur envoie aux joueurs le pseudo du joueur
 			déconnecté.
 
-Les codes d'envoie pour les clients sont :
+Les codes d'envoi pour les clients sont :
 
 	50. pour une attaque d'un poisson normal.
 
@@ -80,7 +80,7 @@ Les codes d'envoie pour les clients sont :
 
 	60. pour une mise à jour du score.
 
-Les codes d'envoie pour le serveur sont :
+Les codes d'envoi pour le serveur sont :
 
 	110. pour un pseudo accepté.
 
