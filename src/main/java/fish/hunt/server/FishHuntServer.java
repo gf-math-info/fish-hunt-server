@@ -145,7 +145,6 @@ public class FishHuntServer {
 
                                 case MISE_A_JOUR_SCORE_RECU:
                                     int score = input.read();
-                                    System.out.println("Mise à jour " + score);
                                     if(score == -1) {//Le joueur est déconnecté.
 
                                         break;
