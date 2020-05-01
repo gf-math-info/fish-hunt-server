@@ -1,3 +1,4 @@
+
 De manière générale, le serveur est programmé tel que vu en cours. Il fonctionne
 comme si une éternelle partie se joue. Le serveur affiche les scores de tous les
 joueurs en ligne à tous les joueurs. Lorsqu'un joueur réussit deux tirs parfaits

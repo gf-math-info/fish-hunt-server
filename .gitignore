@@ -5,3 +5,5 @@
 build
 
 .idea
+stale_outputs_checked
+nohup.out
