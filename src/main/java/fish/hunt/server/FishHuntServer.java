@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class FishHuntServer {
 
@@ -42,22 +43,21 @@ public class FishHuntServer {
             //On lance un joker qui va s'amuser à attaquer les joueurs lorsqu'il y a moins de 4 joueurs.
             new Thread(() -> {
 
-                final long TEMPS_MIN_APPARITION_JOKER = 3000;//En milliseconde.
-                final long TEMPS_MAX_APPARITION_JOKER = 8000;//En milliseconde.
-                Random random = new Random();
+                final long TEMPS_MIN_APPARITION_JOKER = 5000;//En milliseconde.
+                final long TEMPS_MAX_APPARITION_JOKER = 10000;//En milliseconde.
 
                 while(true) {
 
                     try {
-                        Thread.sleep((random.nextLong() % (TEMPS_MAX_APPARITION_JOKER - TEMPS_MIN_APPARITION_JOKER))
-                                + TEMPS_MIN_APPARITION_JOKER);
+                        Thread.sleep(ThreadLocalRandom.current().nextLong(TEMPS_MIN_APPARITION_JOKER,
+                                TEMPS_MAX_APPARITION_JOKER));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
                     synchronized (cadenas) {
                         if(utilisateurs.size() < 4) {
-                            if(random.nextBoolean()) {
+                            if(ThreadLocalRandom.current().nextBoolean()) {
                                 for(PrintWriter utilisateur : utilisateurs) {
                                     utilisateur.write(ATTAQUE_POISSON_NORMAL_ENVOIE);
                                     utilisateur.println("Joker");
@@ -74,7 +74,7 @@ public class FishHuntServer {
                     }
                 }
 
-            });
+            }).start();
 
             while(true) {
 
