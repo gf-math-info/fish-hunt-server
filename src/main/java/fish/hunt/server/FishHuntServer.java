@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class FishHuntServer {
 
@@ -38,6 +39,43 @@ public class FishHuntServer {
             ServerSocket serverSocket = new ServerSocket(PORT, MAX_JOUEURS_ATTENTES);
             System.out.println("Serveur fonctionnel sur le port " + PORT);
 
+            //On lance un joker qui va s'amuser à attaquer les joueurs lorsqu'il y a moins de 4 joueurs.
+            new Thread(() -> {
+
+                final long TEMPS_MIN_APPARITION_JOKER = 3000;//En milliseconde.
+                final long TEMPS_MAX_APPARITION_JOKER = 8000;//En milliseconde.
+                Random random = new Random();
+
+                while(true) {
+
+                    try {
+                        Thread.sleep((random.nextLong() % (TEMPS_MAX_APPARITION_JOKER - TEMPS_MIN_APPARITION_JOKER))
+                                + TEMPS_MIN_APPARITION_JOKER);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    synchronized (cadenas) {
+                        if(utilisateurs.size() < 4) {
+                            if(random.nextBoolean()) {
+                                for(PrintWriter utilisateur : utilisateurs) {
+                                    utilisateur.write(ATTAQUE_POISSON_NORMAL_ENVOIE);
+                                    utilisateur.println("Joker");
+                                    utilisateur.flush();
+                                }
+                            } else {
+                                for(PrintWriter utilisateur : utilisateurs) {
+                                    utilisateur.write(ATTAQUE_POISSON_SPECIAL_ENVOIE);
+                                    utilisateur.println("Joker");
+                                    utilisateur.flush();
+                                }
+                            }
+                        }
+                    }
+                }
+
+            });
+
             while(true) {
 
                 Socket client = serverSocket.accept();
@@ -67,7 +105,8 @@ public class FishHuntServer {
                             pseudoAccepte =
                                     pseudo.strip().length() != 0 &&
                                     pseudo.length() < 11 &&
-                                    !pseudos.containsValue(pseudo);
+                                    !pseudos.containsValue(pseudo) &&
+                                    !pseudo.equals("Joker");
 
                             if(!pseudoAccepte) {
                                 System.out.println("Pseudo, " + pseudo + " refusé");

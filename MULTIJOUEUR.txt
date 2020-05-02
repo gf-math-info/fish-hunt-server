@@ -4,6 +4,9 @@ joueurs en ligne à tous les joueurs. Lorsqu'un joueur réussit deux tirs parfai
 de suite, il envoie un poisson à tous les autres joueurs. S'il fait quatres tirs
 parfaits de suite, il envoie un poisson spécial à tous les autres joueurs.
 
+De plus, un joker envoie de manière aléatoire des poissons aux joueurs lorsque
+la partie contient moins de 4 joueurs.
+
 Les échanges se font comme suit :
 
 	Si un joueur souhaite se joindre à la partie, alors...
