@@ -121,9 +121,9 @@ public class FishHuntServer {
 
                         synchronized (cadenas) {
                             for(PrintWriter utilisateur : utilisateurs) {
-                                output.write(CONNEXION_JOUEUR_ENVOIE);
-                                output.println(pseudo);
-                                output.flush();
+                                utilisateur.write(CONNEXION_JOUEUR_ENVOIE);
+                                utilisateur.println(pseudo);
+                                utilisateur.flush();
                             }
 
                             //On garde le pseudo en mémoire.
