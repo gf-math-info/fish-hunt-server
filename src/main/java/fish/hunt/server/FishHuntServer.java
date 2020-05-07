@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Cette classe représente le serveur de jeu.
+ * @author Fortin-Leblanc, Gabriel
+ * @author Colson-Ratelle, Antoine
+ */
 public class FishHuntServer {
 
     private static final int PORT = 1337;
@@ -33,6 +38,10 @@ public class FishHuntServer {
     private static final HashMap<PrintWriter, String> pseudos = new HashMap<>();
     private static final HashMap<PrintWriter, Integer> scores = new HashMap<>();
 
+    /**
+     * L'entrée du programme.
+     * @param args  Aucun argument n'est évalué.
+     */
     public static void main(String[] args) {
         try {
 
@@ -139,7 +148,6 @@ public class FishHuntServer {
                             output.flush();
                         }
 
-                        System.out.println("Prêt pour la partie");
                         //Entre dans la partie.
                         int requete;
                         while((requete = input.read()) != -1) {
