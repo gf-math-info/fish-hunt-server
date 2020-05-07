@@ -17,6 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class FishHuntServer {
 
+    // ci-dessous, les codes utilisés pour la communication client-serveur.
+    // ces codes sont également listés dans le fichier MULTIJOUEUR.txt
     private static final int PORT = 1337;
     private static final int MAX_JOUEURS_ATTENTES = 25;
 
@@ -51,8 +53,8 @@ public class FishHuntServer {
             //On lance un joker qui va s'amuser à attaquer les joueurs lorsqu'il y a moins de 4 joueurs.
             new Thread(() -> {
 
-                final long TEMPS_MIN_APPARITION_JOKER = 5000;//En milliseconde.
-                final long TEMPS_MAX_APPARITION_JOKER = 10000;//En milliseconde.
+                final long TEMPS_MIN_APPARITION_JOKER = 5000;//En millisecondes.
+                final long TEMPS_MAX_APPARITION_JOKER = 10000;//En millisecondes.
 
                 while(true) {
 
@@ -210,7 +212,7 @@ public class FishHuntServer {
                                                 utilisateur.flush();
                                             }
 
-                                            //On met à jour le score à l'interne.
+                                            //On met à jour le score côté serveur.
                                             scores.replace(output, score);
 
                                         }
