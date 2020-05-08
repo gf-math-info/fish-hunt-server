@@ -9,29 +9,27 @@ PRÉSENTATION DU MODE MULTIJOUEUR
 
 JOKER
     De plus, un joker envoie de manière aléatoire des poissons aux joueurs lorsqu'on
-    a une partie de moins de 4 joueurs. Ce joker ajoute du challenge aux parties qui
-    n'ont pas un nombre suffisamment intéressant, ce qui fait en sorte que le niveau
-    de difficulté est plus intéressant, et donc le jeu plus jouable en multijoueur.
+    a une partie de moins de 4 joueurs. Ce joker ajoute un degré de difficulté à la
+    partie si elle n'a pas un nombre suffisant de joueurs. Ça améliore la jouabilité.
 
 
 ALERTES AU COIN INFÉRIEUR GAUCHE
     Pendant une partie, le joueur reçoit des mises à jour:
      * chaque fois qu'un joueur augmente son score, son nouveau score est transmis à
-       chacun de ses adversaires et affiché dans la zone des alertes, qui est située
-       en base à gauche de l'écran de chaque joueur.
-     * chaque fois qu'un joueur envoie ou reçoit une attaque, ça apparait aussi dans
-       la zone des alertes des joueurs.
-     * chaque fois qu'un joueur se connecte ou se déconnecte, ça apparait également.
+       chacun de ses adversaires Il n'est pas affiché immédiatement.
+     * chaque fois qu'un joueur envoie ou reçoit une attaque, tous les joueurs sont
+       alertés.
+     * chaque fois qu'un joueur se connecte ou se déconnecte, tous les joueurs sont
+       également alertés.
+     * En l'absence d'alertes de connexion ou d'attaque, tous les scores des joueurs
+       sont affichés un par un.
 
-
-AFFICHAGE DES ALERTES
-    Au coin inférieur gauche de l'écran, tous les joueurs reçoivent des mises à jour
-    sur les points et les attaques envoyées et/ou reçues. L'affichage de ces alertes
-    a été un dilemme pour nous. Entre la possibilité de voir toutes les alertes à la
-    fois et la surcharge de l'interface par un trop grand nombre d'alertes, le choix
-    a été pour nous de mettre une seule alerte à la fois, ce qui permet au joueur de
-    ne pas être déconcentré par lesdites alertes. On réduit ainsi les chances qu'une
-    alerte soit par-dessus un poisson. Ce choix améliore l'expérience de jeu.
+    L'affichage de ces alertes a été un dilemme pour nous.  Entre la possibilité 
+    de voir toutes les alertes à la fois et la surcharge de l'interface par un trop 
+    grand nombre d'alertes, le choix a été pour nous de mettre une seule alerte à 
+    la fois: l'alerte la plus à jour. Cela permet au joueur de ne pas être déconcentré 
+    par ces alertes. On réduit ainsi les chances qu'une alerte soit par-dessus 
+    un poisson. Ce choix améliore l'expérience de jeu.
 
 
 MODÈLE DE COMMUNICATION CLIENT-SERVEUR
@@ -49,7 +47,7 @@ MODÈLE DE COMMUNICATION CLIENT-SERVEUR
 			pseudo est accepté ou refusé. Si le pseudo ne répond
 			pas à certains critères ou s'il est déjà pris, il est
 			refusé. Si le pseudo est refusé, alors on retourne à
-			(1). Si le pseudo est accepté, alors il enregistre
+			(2). Si le pseudo est accepté, alors il enregistre
 			le pseudo et le socket du joueur.
 
 			5. le serveur envoie un code à tous les autres joueurs
@@ -58,8 +56,8 @@ MODÈLE DE COMMUNICATION CLIENT-SERVEUR
 			6. le serveur envoie à tous les autres joueurs le pseudo
 			du nouveau joueur.
 
-			7. le serveur lui envoie le nombre de joueurs présents
-			dans la partie.
+			7. le serveur envoie au nouveau joueur le nombre de 
+            joueurs présents dans la partie.
 
 			8. le serveur lui envoie le pseudo et ensuite le score
 			de tous les joueurs présents dans la partie.
@@ -76,10 +74,12 @@ MODÈLE DE COMMUNICATION CLIENT-SERVEUR
 			3. le serveur envoie le pseudo de l'attaquant à tous
 			les joueurs attaqués.
 
-				4. les joueurs reçoivent le code d'attaque.
+				4. les joueurs reçoivent le code d'attaque, le pseudo
+                et agissent en conséquence.
 
 	Si un joueur réussit 4 tirs parfaits de suite, alors le principe de
-	communication est le même que lorsque 2 tirs parfaits se produisent.
+	communication est le même que lorsque 2 tirs parfaits se produisent,
+    mais avec un code différent.
 
 	Si un joueur change de score, alors...
 
@@ -108,6 +108,8 @@ MODÈLE DE COMMUNICATION CLIENT-SERVEUR
 
 			2. le serveur envoie aux joueurs le pseudo du joueur
 			déconnecté.
+
+                3. les joueurs agissent en conséquence.
 
 Les codes d'envoi pour les clients sont :
 
