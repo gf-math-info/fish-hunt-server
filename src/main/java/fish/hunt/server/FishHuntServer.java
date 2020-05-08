@@ -145,7 +145,7 @@ public class FishHuntServer {
                             output.write(utilisateurs.size());
                             for(PrintWriter utilisateur : utilisateurs) {
                                 output.println(pseudos.get(utilisateur));
-                                output.write(scores.get(output));
+                                output.write(scores.get(utilisateur));
                             }
                             output.flush();
                         }
